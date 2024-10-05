@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    display: flex;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-left: 200px;
+}
+
+.sidebar {
+    width: 160px;
+    background-color: #0aaa51;
+    color: #fff;
+    padding: 20px;
+    height: 100%;
+    position: fixed;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 20px;
+}
+
+.sidebar ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    font-family:sans-serif;
+}
+
+.sidebar ul li a:hover {
+    text-decoration: underline;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.video-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.controls {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+.data-table {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+thead {
+    background-color: #f4f4f4;
+}
+
+th {
+    background-color: #0aaa51;
+    color: #fff;
+}
+.chart-container {
+    display: flex;
+    justify-content:space-around;
+    align-content: center;
+}
+
+.chart {
+    width: 50%;
+}

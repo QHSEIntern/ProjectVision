@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime Object Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/1200px-Logospil.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let chartNamaAPD = null;
+        let chartClassAPD = null;
+        let chartNamaHelm = null;
+        let chartClassHelm = null;
+        function startDetection() {
+            fetch('/start_detection', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => console.log(data.status))
+                .catch(error => console.error('Error starting detection:', error));
+        }
+
+        function stopDetection() {
+            fetch('/stop_detection', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => console.log(data.status))
+                .catch(error => console.error('Error stopping detection:', error));
+        }
+
+        function fetchData() {
+            fetch('/data')
+                .catch(error => console.error('Error fetching data:', error))
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Fetched data:', data); // For debugging
+                    const tableBody = document.querySelector('#data-table tbody');
+                    tableBody.innerHTML = '';
+                    data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row.id}</td>
+                            <td>${row.name}</td>
+                            <td>${row.confidence}</td>
+                            <td>${row.timestamp}</td>
+                            <td>${row.classes}</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                })
+                .catch(error => console.error('Error parsing data:', error));
+                
+        }
+
+        function fetchDatahelm() {
+            fetch('/datahelm')
+                .catch(error => console.error('Error fetching data:', error))
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Fetched data:', data); // For debugging
+                    const tableBody = document.querySelector('#data-table-helm tbody');
+                    tableBody.innerHTML = '';
+                    data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row.id}</td>
+                            <td>${row.name}</td>
+                            <td>${row.confidence}</td>
+                            <td>${row.timestamp}</td>
+                            <td>${row.classes}</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                })
+                .catch(error => console.error('Error parsing data:', error));
+                
+        }
+        function drawBarChart(data) {
+            const ctx = document.getElementById('barchart').getContext('2d');
+            if (chartNamaAPD){
+                chartNamaAPD.destroy();
+            }
+            chartNamaAPD =  new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Jumlah Pelanggaran',
+                        data: data.values,
+                        backgroundColor: 'rgba(0, 128, 0, 0.2)',
+                        borderColor: 'rgba(0, 128, 0, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function fetchChartData1() {
+            fetch('/datachart')
+                .then(response => response.json())
+                .then(data => {
+                    const nameSet = new Set();
+                    const uniqueCounts = {};
+
+                    data.forEach(row => {
+                        if (row.name) {
+                            nameSet.add(row.name);
+                        }
+                    });
+                    nameSet.forEach(name => {
+                        uniqueCounts[name] = 0;
+                    })
+                    data.forEach(row => {
+                        if (uniqueCounts.hasOwnProperty(row.name)){
+                            uniqueCounts[row.name] += 1;
+                        }
+                    });
+                    const labels = Object.keys(uniqueCounts);
+                    const values = Object.values(uniqueCounts);
+                    drawBarChart({ labels, values });
+                })
+                .catch(error => console.error('Error fetching data for chart:', error));
+        }
+
+        function drawBarChart2(data) {
+            const ctx1 = document.getElementById('barchart2').getContext('2d');
+            if (chartClassAPD){
+                chartClassAPD.destroy();
+            }
+            chartClassAPD = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Jumlah Pelanggaran',
+                        data: data.values,
+                        backgroundColor: 'rgba(0, 128, 0, 0.2)',
+                        borderColor: 'rgba(0, 128, 0, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        function drawBarChart3(data) {
+            const ctx2 = document.getElementById('barchart3').getContext('2d');
+            if (chartNamaHelm){
+                chartNamaHelm.destroy();
+            }
+            chartNamaHelm = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Jumlah Pelanggaran',
+                        data: data.values,
+                        backgroundColor: 'rgba(0, 128, 0, 0.2)',
+                        borderColor: 'rgba(0, 128, 0, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        function drawBarChart4(data) {
+            const ctx3 = document.getElementById('barchart4').getContext('2d');
+            if (chartClassHelm){
+                chartClassHelm.destroy();
+            }
+            chartClassHelm = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Jumlah Pelanggaran',
+                        data: data.values,
+                        backgroundColor: 'rgba(0, 128, 0, 0.2)',
+                        borderColor: 'rgba(0, 128, 0, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        function fetchChartData() {
+            fetch('/datachart')
+                .then(response => response.json())
+                .then(data => {
+                    const classSet = new Set();
+                    const uniqueCountsclass = {};
+
+                    data.forEach(row => {
+                        if (row.classes) {
+                            classSet.add(row.classes);
+                        }
+                    });
+                    classSet.forEach(classes => {
+                        uniqueCountsclass[classes] = 0;
+                    })
+                    data.forEach(row => {
+                        if (uniqueCountsclass.hasOwnProperty(row.classes)){
+                            uniqueCountsclass[row.classes] += 1;
+                        }
+                    });
+                    const labels = Object.keys(uniqueCountsclass);
+                    const values = Object.values(uniqueCountsclass);
+                    drawBarChart2({ labels, values });
+                })
+                .catch(error => console.error('Error fetching data for chart:', error));
+        }
+        function fetchChartData2() {
+            fetch('/datacharthelm')
+                .then(response => response.json())
+                .then(data => {
+                    const classSet = new Set();
+                    const uniqueCountsclass = {};
+
+                    data.forEach(row => {
+                        if (row.name) {
+                            classSet.add(row.name);
+                        }
+                    });
+                    classSet.forEach(name => {
+                        uniqueCountsclass[name] = 0;
+                    })
+                    data.forEach(row => {
+                        if (uniqueCountsclass.hasOwnProperty(row.name)){
+                            uniqueCountsclass[row.name] += 1;
+                        }
+                    });
+                    const labels = Object.keys(uniqueCountsclass);
+                    const values = Object.values(uniqueCountsclass);
+                    drawBarChart3({ labels, values });
+                })
+                .catch(error => console.error('Error fetching data for chart:', error));
+        }
+        function fetchChartData3() {
+            fetch('/datacharthelm')
+                .then(response => response.json())
+                .then(data => {
+                    const classSet = new Set();
+                    const uniqueCountsclass = {};
+
+                    data.forEach(row => {
+                        if (row.classes) {
+                            classSet.add(row.classes);
+                        }
+                    });
+                    classSet.forEach(classes => {
+                        uniqueCountsclass[classes] = 0;
+                    })
+                    data.forEach(row => {
+                        if (uniqueCountsclass.hasOwnProperty(row.classes)){
+                            uniqueCountsclass[row.classes] += 1;
+                        }
+                    });
+                    const labels = Object.keys(uniqueCountsclass);
+                    const values = Object.values(uniqueCountsclass);
+                    drawBarChart4({ labels, values });
+                })
+                .catch(error => console.error('Error fetching data for chart:', error));
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchChartData(); // Fetch chart data on page load
+            fetchChartData1()
+            fetchData()
+            fetchDatahelm()
+            fetchChartData2()
+            fetchChartData3()
+            setInterval(fetchChartData, 5000); // Update chart data every 5 seconds
+            setInterval(fetchChartData1, 5000); // Update chart data every 5 seconds
+            setInterval(fetchData, 5000);
+            setInterval(fetchDatahelm, 5000)
+            setInterval(fetchChartData2, 5000)
+            setInterval(fetchChartData3, 5000)
+    });
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="https://www.myspil.com/myspilcom/assets/images/enhance/logoreloaded.png" alt="SPIL" width="150px" height="60px">
+        <ul>
+            <li><a href="{{ url_for('index') }}"><i class="fa fa-fw fa-home"></i> Dashboard </a></li>
+            <li><a href="{{ url_for('camera_preview') }}"><i class="fa fa-fw fa-camera-retro"></i> Deteksi Kelengkapan APD </a></li>
+            <li><a href="{{ url_for('helm_preview') }}"><i class="fa fa-fw fa-camera-retro"></i> Deteksi Kelengkapan Helm </a></li>
+        </ul>
+    </div>
+    <div class="container">
+        <div class="content">
+            <h1>Dashboard</h1>
+            <div class="chart-container" style="margin-top: 20px; ">
+                <div class="chart-apd">
+                    <h3 style="text-align: center;">Chart APD</h3>
+
+                    <div class="chart" style="flex-direction: row; display: flex;">
+                        <canvas id="barchart" width="400" height="200"></canvas>
+                        <canvas id="barchart2" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-helm">
+                    <h3 style="text-align: center;">Chart Helm</h3>
+
+                    <div class="chart" style="flex-direction: row; display: flex;">
+                        <canvas id="barchart3" width="400" height="200"></canvas>
+                        <canvas id="barchart4" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <div class="table-container", style="display: flex; flex-direction: row;">
+                    <table id="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nama</th>
+                                <th>Confidence</th>
+                                <th>Timestamp</th>
+                                <th>Classes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                    
+                    <table id="data-table-helm", style="margin-left: 40px;">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nama</th>
+                                <th>Confidence</th>
+                                <th>Timestamp</th>
+                                <th>Classes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>

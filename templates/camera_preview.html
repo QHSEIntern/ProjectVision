@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Preview</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script>
+        function startDetection() {
+            fetch('/start_detection', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => console.log(data.status))
+                .catch(error => console.error('Error starting detection:', error));
+        }
+
+        function stopDetection() {
+            fetch('/stop_detection', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => console.log(data.status))
+                .catch(error => console.error('Error stopping detection:', error));
+        }
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="https://www.myspil.com/myspilcom/assets/images/enhance/logoreloaded.png" alt="SPIL" width="150px" height="60px">
+        <ul>
+            <li><a href="{{ url_for('index') }}"><i class="fa fa-fw fa-home"></i> Dashboard </a></li>
+            <li><a href="{{ url_for('camera_preview') }}"><i class="fa fa-fw fa-camera-retro"></i> Deteksi Kelengkapan APD </a></li>
+            <li><a href="{{ url_for('helm_preview') }}"><i class="fa fa-fw fa-camera-retro"></i> Deteksi Kelengkapan Helm </a></li>
+        </ul>
+    </div>
+    <div class="container">
+        
+        <div class="content">
+            <h1>Preview Kamera</h1>
+            <div class="video-container">
+                <img src="{{ url_for('video_feed') }}" alt="Video Feed">
+            </div>
+            <div class="controls">
+                <button onclick="startDetection()">Start Detection</button>
+                <button onclick="stopDetection()">Stop Detection</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
